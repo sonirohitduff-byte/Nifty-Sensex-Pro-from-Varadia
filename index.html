@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>NIFTY SENSEX PRO</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#101827;color:#f1f5f9;
+ font-family:Arial,sans-serif;padding:18px
+}
+.container{max-width:850px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center}
+h1{font-size:23px;color:#38bdf8;margin:8px 0}
+.sub{color:#94a3b8;font-size:12px}
+.status{
+ padding:7px 12px;border-radius:20px;
+ background:#334155;font-size:12px
+}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.card{
+ background:#1e293b;padding:18px;border-radius:14px;
+ border:1px solid #334155
+}
+.card small{color:#94a3b8}
+.price{font-size:25px;font-weight:bold;margin-top:10px}
+.panel{
+ background:#1e293b;padding:18px;border-radius:14px;
+ margin-top:16px;border:1px solid #334155
+}
+.buttons{display:flex;gap:12px;margin-top:15px}
+button{
+ flex:1;padding:14px;border:0;border-radius:10px;
+ color:white;font-size:15px;font-weight:bold;cursor:pointer
+}
+.start{background:#16a34a}
+.stop{background:#dc2626}
+button:disabled{opacity:.4;cursor:not-allowed}
+.row{
+ display:flex;justify-content:space-between;
+ padding:12px 0;border-bottom:1px solid #334155;
+ font-size:14px
+}
+.green{color:#4ade80}
+.red{color:#f87171}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pattern{
+ background:#263449;padding:12px;border-radius:8px;font-size:13px
+}
+.note{color:#94a3b8;font-size:12px;line-height:1.6}
+footer{text-align:center;color:#64748b;margin:25px 0;font-size:12px}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+ <div>
+  <h1>⚡ NIFTY SENSEX PRO</h1>
+  <div class="sub">Candlestick Pattern Scanner</div>
+ </div>
+ <div class="status" id="status">STOPPED</div>
+</header>
+
+<div class="cards">
+ <div class="card">
+  <small>NIFTY 50</small>
+  <div class="price">—</div>
+  <small>Waiting for live data</small>
+ </div>
+ <div class="card">
+  <small>SENSEX</small>
+  <div class="price">—</div>
+  <small>Waiting for live data</small>
+ </div>
+</div>
+
+<div class="panel">
+ <h3>Scanner Control</h3>
+ <div class="row">
+  <span>Scanner Status</span>
+  <strong id="scannerStatus">STOPPED</strong>
+ </div>
+ <div class="row">
+  <span>Refresh Interval</span>
+  <strong>60 Seconds</strong>
+ </div>
+ <div class="row">
+  <span>Timeframes</span>
+  <strong>5 / 10 / 15 / 30 Min</strong>
+ </div>
+ <div class="buttons">
+  <button class="start" id="startBtn" onclick="startScanner()">▶ START</button>
+  <button class="stop" id="stopBtn" onclick="stopScanner()" disabled>■ STOP</button>
+ </div>
+ <p class="note" id="message">
+  Dashboard is ready. Backend connection pending.
+ </p>
+</div>
+
+<div class="panel">
+ <h3>Scanner Jobs (8)</h3>
+ <div class="grid" id="jobs">
+  <div class="pattern">NIFTY 50 · 5 Min</div>
+  <div class="pattern">NIFTY 50 · 10 Min</div>
+  <div class="pattern">NIFTY 50 · 15 Min</div>
+  <div class="pattern">NIFTY 50 · 30 Min</div>
+  <div class="pattern">SENSEX · 5 Min</div>
+  <div class="pattern">SENSEX · 10 Min</div>
+  <div class="pattern">SENSEX · 15 Min</div>
+  <div class="pattern">SENSEX · 30 Min</div>
+ </div>
+</div>
+
+<div class="panel">
+ <h3>Active Candlestick Patterns</h3>
+ <div class="grid">
+  <div class="pattern">Dragonfly Doji · BUY</div>
+  <div class="pattern">Gravestone Doji · SELL</div>
+  <div class="pattern">Hammer · BUY</div>
+  <div class="pattern">Hanging Man · SELL</div>
+  <div class="pattern">Shooting Star · SELL</div>
+  <div class="pattern">Inverted Hammer · BUY</div>
+  <div class="pattern">Morning Star · BUY</div>
+  <div class="pattern">Evening Star · SELL</div>
+ </div>
+</div>
+
+<div class="panel">
+ <h3>Pivot Levels</h3>
+ <p class="note">Live Pivot Data will appear after backend connection.</p>
+ <div class="row"><span>NIFTY 50</span><strong>—</strong></div>
+ <div class="row"><span>SENSEX</span><strong>—</strong></div>
+</div>
+
+<div class="panel">
+ <h3>Recent Signals</h3>
+ <p class="note">No live signals received yet.</p>
+</div>
+
+<footer>
+ NIFTY SENSEX PRO · Market Scanner Dashboard
+</footer>
+</div>
+
+<script>
+let running = false;
+
+function startScanner(){
+ running = true;
+ document.getElementById("status").textContent = "START REQUESTED";
+ document.getElementById("scannerStatus").textContent = "START REQUESTED";
+ document.getElementById("startBtn").disabled = true;
+ document.getElementById("stopBtn").disabled = false;
+ document.getElementById("message").textContent =
+ "Dashboard preview only. Scanner backend is not connected yet.";
+}
+
+function stopScanner(){
+ running = false;
+ document.getElementById("status").textContent = "STOPPED";
+ document.getElementById("scannerStatus").textContent = "STOPPED";
+ document.getElementById("startBtn").disabled = false;
+ document.getElementById("stopBtn").disabled = true;
+ document.getElementById("message").textContent =
+ "Dashboard preview only. No backend command was sent.";
+}
+</script>
+</body>
+</html>
