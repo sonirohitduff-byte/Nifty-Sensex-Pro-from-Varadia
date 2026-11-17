@@ -148,28 +148,63 @@ footer{text-align:center;color:#64748b;margin:25px 0;font-size:12px}
 </footer>
 </div>
 
-<script>
-let running = false;
 
-function startScanner(){
- running = true;
- document.getElementById("status").textContent = "START REQUESTED";
- document.getElementById("scannerStatus").textContent = "START REQUESTED";
- document.getElementById("startBtn").disabled = true;
- document.getElementById("stopBtn").disabled = false;
- document.getElementById("message").textContent =
- "Dashboard preview only. Scanner backend is not connected yet.";
+<script>
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxC0HdZrzfdatSpy5o4T-9NrXqEaLHcyW2txGNWo_LN0qtJklr0zzz2IOL0VWcAyiGA/exec";
+
+function setStatus(status, message) {
+  document.getElementById("status").textContent = status;
+  document.getElementById("scannerStatus").textContent = status;
+  document.getElementById("message").textContent = message;
+
+  document.getElementById("startBtn").disabled = status === "RUNNING";
+  document.getElementById("stopBtn").disabled = status !== "RUNNING";
 }
 
-function stopScanner(){
- running = false;
- document.getElementById("status").textContent = "STOPPED";
- document.getElementById("scannerStatus").textContent = "STOPPED";
- document.getElementById("startBtn").disabled = false;
- document.getElementById("stopBtn").disabled = true;
- document.getElementById("message").textContent =
- "Dashboard preview only. No backend command was sent.";
+async function sendCommand(action) {
+  const token = prompt("Backend test key enter karein:");
+  if (!token) return;
+
+  document.getElementById("message").textContent =
+    "Backend se connection ho raha hai...";
+
+  try {
+    const response = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        token: token,
+        action: action
+      })
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || "Command failed");
+    }
+
+    setStatus(
+      result.scanner_status,
+      result.message || "Backend command successful."
+    );
+
+  } catch (error) {
+    document.getElementById("message").textContent =
+      "Connection error: " + error.message;
+  }
+}
+
+function startScanner() {
+  sendCommand("start");
+}
+
+function stopScanner() {
+  sendCommand("stop");
 }
 </script>
+
 </body>
 </html>
